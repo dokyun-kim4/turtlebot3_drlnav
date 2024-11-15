@@ -35,7 +35,7 @@ from .dqn import DQN
 from .ddpg import DDPG
 from .td3 import TD3
 
-from turtlebot3_msgs.srv import DrlStep, Goal
+from turtlebot3_msgs.srv import DrlStep, Goal # type: ignore
 from std_srvs.srv import Empty
 
 import rclpy
@@ -134,10 +134,10 @@ class DrlAgent(Node):
 
                 action_current = action
                 if self.algorithm == 'dqn':
-                    action_current = self.model.possible_actions[action]
+                    action_current = self.model.possible_actions[action] # type: ignore
 
                 # Take a step
-                next_state, reward, episode_done, outcome, distance_traveled = util.step(self, action_current, action_past)
+                next_state, reward, episode_done, outcome, distance_traveled = util.step(self, action_current, action_past) # type: ignore
                 action_past = copy.deepcopy(action_current)
                 reward_sum += reward
 
@@ -188,7 +188,7 @@ class DrlAgent(Node):
 
             if (self.episode % MODEL_STORE_INTERVAL == 0) or (self.episode == 1):
                 self.sm.save_session(self.episode, self.model.networks, self.graph.graphdata, self.replay_buffer.buffer)
-                self.logger.update_comparison_file(self.episode, self.graph.get_success_count(), self.graph.get_reward_average())
+                self.logger.update_comparison_file(self.episode, self.graph.get_success_count(), self.graph.get_reward_average()) # type: ignore
             if (self.episode % GRAPH_DRAW_INTERVAL == 0) or (self.episode == 1):
                 self.graph.draw_plots(self.episode)
 
@@ -199,7 +199,7 @@ def main(args=sys.argv[1:]):
     rclpy.init(args=args)
     drl_agent = DrlAgent(*args)
     rclpy.spin(drl_agent)
-    drl_agent.destroy()
+    drl_agent.destroy() # type: ignore
     rclpy.shutdown()
 
 def main_train(args=sys.argv[1:]):

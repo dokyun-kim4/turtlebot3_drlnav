@@ -12,7 +12,7 @@ from ..common.settings import REWARD_FUNCTION, COLLISION_OBSTACLE, COLLISION_WAL
 import xml.etree.ElementTree as ET
 
 try:
-    with open('/tmp/drlnav_current_stage.txt', 'r') as f:
+    with open(os.getenv('DRLNAV_BASE_PATH') + '/tmp/drlnav_current_stage.txt', 'r') as f: # type: ignore
         stage = int(f.read())
 except FileNotFoundError:
     print("\033[1m" + "\033[93m" + "Make sure to launch the gazebo simulation node first!" + "\033[0m}")

@@ -16,17 +16,18 @@
 #
 # Authors: Ryan Shim, Gilbert, Tomas
 
+import os
 import math
 import numpy
 import sys
 import copy
-from numpy.core.numeric import Infinity
+from numpy.core.numeric import Infinity # type: ignore
 
 from geometry_msgs.msg import Pose, Twist
 from rosgraph_msgs.msg import Clock
 from nav_msgs.msg import Odometry
 from sensor_msgs.msg import LaserScan
-from turtlebot3_msgs.srv import DrlStep, Goal, RingGoal
+from turtlebot3_msgs.srv import DrlStep, Goal, RingGoal # type: ignore
 
 import rclpy
 from rclpy.node import Node
@@ -47,7 +48,7 @@ MAX_GOAL_DISTANCE = math.sqrt(ARENA_LENGTH**2 + ARENA_WIDTH**2)
 class DRLEnvironment(Node):
     def __init__(self):
         super().__init__('drl_environment')
-        with open('/tmp/drlnav_current_stage.txt', 'r') as f:
+        with open(os.getenv('DRLNAV_BASE_PATH') + '/tmp/drlnav_current_stage.txt', 'r') as f: # type: ignore
             self.stage = int(f.read())
         print(f"running on stage: {self.stage}")
         self.episode_timeout = EPISODE_TIMEOUT_SECONDS
@@ -77,7 +78,7 @@ class DRLEnvironment(Node):
         self.goal_distance = MAX_GOAL_DISTANCE
         self.initial_distance_to_goal = MAX_GOAL_DISTANCE
 
-        self.scan_ranges = [LIDAR_DISTANCE_CAP] * NUM_SCAN_SAMPLES
+        self.scan_ranges = [LIDAR_DISTANCE_CAP] * NUM_SCAN_SAMPLES # type: ignore
         self.obstacle_distance = LIDAR_DISTANCE_CAP
 
         self.difficulty_radius = 1
@@ -161,7 +162,7 @@ class DRLEnvironment(Node):
             print(f"more or less scans than expected! check model.sdf, got: {len(msg.ranges)}, expected: {NUM_SCAN_SAMPLES}")
         # normalize laser values
         self.obstacle_distance = 1
-        for i in range(NUM_SCAN_SAMPLES):
+        for i in range(NUM_SCAN_SAMPLES): # type: ignore
                 self.scan_ranges[i] = numpy.clip(float(msg.ranges[i]) / LIDAR_DISTANCE_CAP, 0, 1)
                 if self.scan_ranges[i] < self.obstacle_distance:
                     self.obstacle_distance = self.scan_ranges[i]
@@ -291,7 +292,7 @@ def main(args=sys.argv[1:]):
         rclpy.shutdown()
         quit("ERROR: wrong number of arguments!")
     rclpy.spin(drl_environment)
-    drl_environment.destroy()
+    drl_environment.destroy() # type: ignore
     rclpy.shutdown()
 
 
